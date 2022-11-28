@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { isUrl } = require('../utils/validateUrl');
 
-const userSchema = new mongoose.Schema({
+const cardSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -10,6 +11,10 @@ const userSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: isUrl,
+      message: 'Некорректный URL',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,4 +34,4 @@ const userSchema = new mongoose.Schema({
   versionKey: false,
 });
 
-module.exports = mongoose.model('card', userSchema);
+module.exports = mongoose.model('card', cardSchema);

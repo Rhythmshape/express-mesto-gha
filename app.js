@@ -1,13 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
+
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const { NOT_FOUND } = require('./utils/errors');
+
+const { createUser, login } = require('./controllers/users');
+const { validationCreateUser, validationLogin } = require('./middlewares/validation');
+
+const auth = require('./middlewares/auth');
+
+const handleError = require('./middlewares/handleError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {})
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+})
   // eslint-disable-next-line no-console
   .then(console.log('connected to data base'));
 
@@ -16,19 +27,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '636f787a1a410e701ae9e38d',
-  };
+app.post('/signin', validationLogin, login);
+app.post('/signup', validationCreateUser, createUser);
 
-  next();
-});
+app.use(auth);
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-app.use('*', (req, res) => {
-  res.status(NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' });
+app.use(errors());
+app.use(handleError);
+
+app.use('*', auth, (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
 app.listen(PORT, () => {
