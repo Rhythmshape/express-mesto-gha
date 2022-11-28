@@ -105,7 +105,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        '6384dca80f348d5fa649f691',
         { expiresIn: '7d' },
       );
       res.send({ token, message: 'Успешная Авторизация!' });
