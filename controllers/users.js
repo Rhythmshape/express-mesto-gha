@@ -49,15 +49,23 @@ module.exports.createUser = (req, res, next) => {
         password: hash,
       });
     })
-    .then((user) => res.status(201).send(user))
+    .then((user) => {
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id,
+        email: user.email,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные ');
       } if (err.name === 'MongoServerError' && err.code === 11000) {
         throw new ConflictError('Пользователь уже существует');
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 
 module.exports.updateUser = (req, res, next) => {
