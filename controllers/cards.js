@@ -22,7 +22,7 @@ module.exports.createCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
     })
     .catch(next);
@@ -80,10 +80,8 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        // eslint-disable-next-line no-undef
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      // eslint-disable-next-line no-undef
-      return next(err);
+      next(err);
     });
 };
