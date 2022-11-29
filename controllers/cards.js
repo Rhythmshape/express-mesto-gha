@@ -83,11 +83,7 @@ module.exports.dislikeCard = (req, res) => {
         // eslint-disable-next-line no-undef
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      if (err.message === 'NotFound') {
-        // eslint-disable-next-line no-undef
-        next(new NotFoundError('Передан несуществующий _id карточки'));
-      }
       // eslint-disable-next-line no-undef
-      next(err);
+      return next(err);
     });
 };

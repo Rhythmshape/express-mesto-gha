@@ -131,10 +131,11 @@ module.exports.getCurrentUser = (req, res, next) => {
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      } else if (err.message === 'NotFound') {
-        throw new NotFoundError('Пользователь не найден');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
-    })
-    .catch(next);
+      if (err.message === 'NotFound') {
+        next(new NotFoundError('Пользователь не найден'));
+      }
+      next(err);
+    });
 };
