@@ -35,12 +35,12 @@ app.use(auth);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-app.use(errors());
-app.use(handleError);
-
-app.use('*', auth, (req, res, next) => {
+app.use('*', (req, res, next) => {
   next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
+
+app.use(errors());
+app.use(handleError);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
