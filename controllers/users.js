@@ -60,11 +60,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные ');
-      } if (err.code === 11000) {
-        throw new ConflictError('Пользователь уже существует');
+        next(new BadRequestError('Переданы некорректные данные '));
+      } if (err.name === 'MongoServerError' && err.code === 11000) {
+        next(new ConflictError('Пользователь уже существует'));
       }
-      return next(err);
+      next(err);
     });
 };
 
