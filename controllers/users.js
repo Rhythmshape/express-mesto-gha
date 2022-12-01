@@ -23,11 +23,9 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не найден'));
-      }
-      next(err);
     });
 };
 
@@ -61,10 +59,11 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные '));
-      } if (err.name === 'MongoServerError' && err.code === 11000) {
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
         next(new ConflictError('Пользователь уже существует'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -81,10 +80,11 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -100,10 +100,11 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.login = (req, res, next) => {
@@ -118,8 +119,12 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token, message: 'Успешная Авторизация!' });
     })
-    .catch(() => {
-      next(new AuthError('Неправильные почта или пароль.'));
+    .catch((err) => {
+      if (err.name === 'AuthError') {
+        next(new AuthError('Неправильные почта или пароль.'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -132,10 +137,8 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не найден'));
-      }
-      next(err);
     });
 };

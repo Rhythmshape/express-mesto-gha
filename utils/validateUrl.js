@@ -1,4 +1,4 @@
-const regex = /^http(s)?:\/\/(www\.)?([\w\S]+\.)([\w\S]{2,}#?)/;
+const regex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 const BadRequestError = require('../errors/BadRequestError');
 
 module.exports.isUrl = (string) => {

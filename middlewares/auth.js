@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, '6384dca80f348d5fa649f691');
   } catch (err) {
-    throw new AuthError('Необходима авторизация');
+    next(new AuthError('Необходима авторизация'));
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
